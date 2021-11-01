@@ -173,12 +173,7 @@ def rl_choose_by_pending_queue(env):
 
 def rl_choose_by_uplinkb_and_pendingqueue(env):
 	'''
-<<<<<<< HEAD
 	基于上传带宽和任务队列选择actions
-=======
-	基于等待队列大小以及用户所在位置选择两个服务器进行卸载
-	DS-BW
->>>>>>> 66adf975b24cd9de9a717de1c88cb28c86ebf230
 	'''
 	reward = []
 
@@ -219,12 +214,7 @@ def rl_choose_by_uplinkb_and_pendingqueue(env):
 
 def MS(env, actionList):
 	'''
-<<<<<<< HEAD
 	首先使用Reload生成卸载策略，之后在不改变分配比列的情况下，按照服务器间延迟重新选择服务器
-=======
-	基于Reload算法的卸载策略，选择相同数量的延迟最小的服务器进行卸载
-	MS
->>>>>>> 66adf975b24cd9de9a717de1c88cb28c86ebf230
 	'''
 	reward = []
 
