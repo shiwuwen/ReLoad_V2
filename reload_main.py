@@ -418,30 +418,37 @@ if __name__ == '__main__':
 
 	# SS-B
 	# rl_choose_by_uplink_b
-	# rlb = rl_choose_by_uplink_b(env)
+	rlb = rl_choose_by_uplink_b(env)
 	# print('episode reward of rlb : ')
 	# print(rlb)
 
 	# SS-W
 	# rl_choose_by_pending_queue
-	# rlq = rl_choose_by_pending_queue(env)
+	rlq = rl_choose_by_pending_queue(env)
 	# print('episode reward of rlq : ')
 	# print(rlq)
 	
 	# DS-BW
 	# rl_choose_by_uplinkb_and_pendingqueue
-	# rlbq = rl_choose_by_uplinkb_and_pendingqueue(env)
+	rlbq = rl_choose_by_uplinkb_and_pendingqueue(env)
 	# print('episode reward of rlbq : ')
 	# print(rlbq)
 
 
 	# MS
-	# rMS = MS(env, actionListForMS)
+	rMS = MS(env, actionListForMS)
 	# print('episode reward of MS : ')
 	# print(rMS)
 
 
-	# 查看deadline之前完成的任务数
+	#ddpg算法
+	rddpg = rl_ddpg(env)
+	# print('episode reward of ddpg : ')
+	# print(rddpg)
+
+
+	# 查看 deadline 之前完成的任务数
+	# 使用 reward 进行统计
 	# racnum = toolbar.countNumber(rac)
 	# rmsnum = toolbar.countNumber(rMS)
 	# rlbnum = toolbar.countNumber(rlb)
@@ -467,11 +474,11 @@ if __name__ == '__main__':
 	plt.figure()
 	plt.plot(x, rac, color='blue', label='Reload')
 	# plt.plot(x, rac_bound_0, color='orange', label='Reload_nobound')
-	# plt.plot(x, rlb, color='green', label='SS-B')
-	# plt.plot(x, rlq, color='cyan', label='SS-W')
-	# plt.plot(x, rlbq, color='grey', label='DS-BW')
-	# plt.plot(x, rMS, color='yellow', label='MS')
-	# plt.plot(x, rddpg, color='red', label='rddpg')
+	plt.plot(x, rlb, color='green', label='SS-B')
+	plt.plot(x, rlq, color='cyan', label='SS-W')
+	plt.plot(x, rlbq, color='grey', label='DS-BW')
+	plt.plot(x, rMS, color='yellow', label='MS')
+	plt.plot(x, rddpg, color='red', label='rddpg')
 
 	plt.legend()
 

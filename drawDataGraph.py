@@ -126,6 +126,7 @@ if __name__ == '__main__':
 	#n=20,lamda=[20,50]:MAX_EPISODES=100
 	#n=20,lamda=[40,70]:MAX_EPISODES=100
 
+	# 绘制 clip_bound 消融实验图
 	inLineCortXLabel = 'Reward'
 	inLineCortYLabel = 'Episode'
 	inLineCortFilename = 'n10lamda25_compare.txt'
