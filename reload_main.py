@@ -256,6 +256,89 @@ def MS(env, actionList):
 	return reward
 
 
+def rl_ddpg(env):
+	
+	# 使用ddpg算法生成二进制决策算法
+	
+
+	reward = []
+
+	with tf.name_scope('S'):
+		S = tf.placeholder(tf.float32, shape=[None, state_dim], name='s')
+	with tf.name_scope('R'):
+		R = tf.placeholder(tf.float32, [None, 1], name='r')
+	with tf.name_scope('S_'):
+		S_ = tf.placeholder(tf.float32, shape=[None, state_dim], name='s_')
+
+	sess = tf.Session()
+
+	#生成网络
+	actor_ddpg = Actor_ddpg(sess, action_dim, LR_A, REPLACEMENT, S, R, S_)
+	critic_ddpg = Critic_ddpg(sess, state_dim, action_dim, LR_C, GAMMA, REPLACEMENT, actor_ddpg.a, actor_ddpg.a_, S, R, S_)
+	actor_ddpg.add_grad_to_graph(critic_ddpg.a_grads)
+
+	sess.run(tf.global_variables_initializer())
+
+	#更新记忆库
+	M = Memory_ddpg(MEMORY_CAPACITY, dims=2 * state_dim + action_dim + 1)
+
+	# print('OUTPUT_GRAPH: ' , OUTPUT_GRAPH)
+
+	if OUTPUT_GRAPH:
+		tf.summary.FileWriter("logs/", sess.graph)
+
+	t1 = time.time()
+	for episode in range(MAX_EPISODES):
+		#初始化
+		s = env.reset()
+		ep_reward = 0
+
+		for step in range(MAX_EP_STEPS):
+
+			#获取actions，并保留两位小数
+			a_temp = actor_ddpg.choose_action(s).round(2)
+			#将数组转换为one_hot数组
+			a = np.zeros_like(a_temp)
+			a[np.argmax(a_temp)] = 1
+			# if i == 0 and step == 0:
+			# 	a = np.zeros(env.action_dim)
+			# 	a[0] = 1
+			# a = sess.run(tf.nn.softmax(a_))
+
+			#获取state_, reward
+			s_, r = env.step(a)
+
+			#存储训练数据
+			M.store_transition(s, a, r, s_)
+
+			#当存储数据大于阈值时开始训练
+			if M.pointer > MEMORY_CAPACITY:
+				b_M = M.sample(BATCH_SIZE)
+				b_s = b_M[:, :state_dim]
+				b_a = b_M[:, state_dim:state_dim+action_dim]
+				b_r = b_M[:, -state_dim-1: -state_dim]
+				b_s_ = b_M[:, -state_dim:]
+
+				critic_ddpg.learn(b_s, b_a, b_r, b_s_)
+				actor_ddpg.learn(b_s)
+
+			s = s_
+			ep_reward += r
+
+			# reward.append(r)
+
+			if (episode == 0 and step == 0) or step == MAX_EP_STEPS-1: #(i == MAX_EPISODES-1 and step == MAX_EP_STEPS-1): ##if step == MAX_EP_STEPS-1:
+				print('EPISODE: ', episode,' action probability of rddpg: ', a)
+				# print('action_ probability: ', a_)
+				# print('state : ', s)
+				# print('reward : ', r)
+				# print('Episode:', i, ' Reward: %i' % int(ep_reward))
+		reward.append(round(ep_reward/MAX_EP_STEPS,2))
+
+	print('Running time of rl_ddpg: ', time.time()-t1)
+	return reward
+	
+
 #####################  hyper parameters  ####################
 LR_A = 0.001    # learning rate for actor  	0.001
 LR_C = 0.001    # learning rate for critic 	0.001
@@ -449,87 +532,4 @@ def local_only(env):
 
 	print('Running time of rl_ac: ', time.time()-t1)
 	return reward 	
-
-
-def rl_ddpg(env):
-	
-	# 使用ddpg算法生成二进制决策算法
-	
-
-	reward = []
-
-	with tf.name_scope('S'):
-		S = tf.placeholder(tf.float32, shape=[None, state_dim], name='s')
-	with tf.name_scope('R'):
-		R = tf.placeholder(tf.float32, [None, 1], name='r')
-	with tf.name_scope('S_'):
-		S_ = tf.placeholder(tf.float32, shape=[None, state_dim], name='s_')
-
-	sess = tf.Session()
-
-	#生成网络
-	actor_ddpg = Actor_ddpg(sess, action_dim, LR_A, REPLACEMENT, S, R, S_)
-	critic_ddpg = Critic_ddpg(sess, state_dim, action_dim, LR_C, GAMMA, REPLACEMENT, actor_ddpg.a, actor_ddpg.a_, S, R, S_)
-	actor_ddpg.add_grad_to_graph(critic_ddpg.a_grads)
-
-	sess.run(tf.global_variables_initializer())
-
-	#更新记忆库
-	M = Memory_ddpg(MEMORY_CAPACITY, dims=2 * state_dim + action_dim + 1)
-
-	# print('OUTPUT_GRAPH: ' , OUTPUT_GRAPH)
-
-	if OUTPUT_GRAPH:
-		tf.summary.FileWriter("logs/", sess.graph)
-
-	t1 = time.time()
-	for episode in range(MAX_EPISODES):
-		#初始化
-		s = env.reset()
-		ep_reward = 0
-
-		for step in range(MAX_EP_STEPS):
-
-			#获取actions，并保留两位小数
-			a_temp = actor_ddpg.choose_action(s).round(2)
-			#将数组转换为one_hot数组
-			a = np.zeros_like(a_temp)
-			a[np.argmax(a_temp)] = 1
-			# if i == 0 and step == 0:
-			# 	a = np.zeros(env.action_dim)
-			# 	a[0] = 1
-			# a = sess.run(tf.nn.softmax(a_))
-
-			#获取state_, reward
-			s_, r = env.step(a)
-
-			#存储训练数据
-			M.store_transition(s, a, r, s_)
-
-			#当存储数据大于阈值时开始训练
-			if M.pointer > MEMORY_CAPACITY:
-				b_M = M.sample(BATCH_SIZE)
-				b_s = b_M[:, :state_dim]
-				b_a = b_M[:, state_dim:state_dim+action_dim]
-				b_r = b_M[:, -state_dim-1: -state_dim]
-				b_s_ = b_M[:, -state_dim:]
-
-				critic_ddpg.learn(b_s, b_a, b_r, b_s_)
-				actor_ddpg.learn(b_s)
-
-			s = s_
-			ep_reward += r
-
-			# reward.append(r)
-
-			if (episode == 0 and step == 0) or step == MAX_EP_STEPS-1: #(i == MAX_EPISODES-1 and step == MAX_EP_STEPS-1): ##if step == MAX_EP_STEPS-1:
-				print('EPISODE: ', episode,' action probability of rddpg: ', a)
-				# print('action_ probability: ', a_)
-				# print('state : ', s)
-				# print('reward : ', r)
-				# print('Episode:', i, ' Reward: %i' % int(ep_reward))
-		reward.append(round(ep_reward/MAX_EP_STEPS,2))
-
-	print('Running time of rl_ddpg: ', time.time()-t1)
-	return reward
 '''
