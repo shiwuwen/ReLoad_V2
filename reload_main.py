@@ -297,9 +297,10 @@ def rl_ddpg(env):
 
 			#获取actions，并保留两位小数
 			a_temp = actor_ddpg.choose_action(s).round(2)
+			a = a_temp
 			#将数组转换为one_hot数组
-			a = np.zeros_like(a_temp)
-			a[np.argmax(a_temp)] = 1
+			# a = np.zeros_like(a_temp)
+			# a[np.argmax(a_temp)] = 1
 			# if i == 0 and step == 0:
 			# 	a = np.zeros(env.action_dim)
 			# 	a[0] = 1
@@ -383,7 +384,7 @@ np.random.seed(5)
 #n=10,lamda=[40,70]:MAX_EPISODES=300
 #n=20,lamda=[20,50]:MAX_EPISODES=100
 #n=20,lamda=[40,70]:MAX_EPISODES=100
-MAX_EPISODES = 260
+MAX_EPISODES = 1000
 MAX_EP_STEPS = 100
 
 
@@ -399,35 +400,45 @@ if __name__ == '__main__':
 	print(env.a, env.N, env.c)
 	# print(env.g)
 
-	#local-only算法
+	# local-only算法
 	# rlo = local_only(env)
 	# print('episode reward of local only : ')
 	# print(rlo)
 
 
-	#action-critic算法 Reload
+	# action-critic算法 Reload
 	rac, actionListForMS = rl_ac(env, clip_bound)
 	# print(actionListForMS[0:5])
 
-	#Reload with no clip bound
+
+	# Reload with no clip bound
 	#重置计算图
 	# tf.reset_default_graph()
 	# rac_bound_0, _ = rl_ac(env)
 	# print('episode reward of ac : ')
 	# print(rac)
 
+
+	# ddpg算法
+	# rddpg = rl_ddpg(env)
+	# print('episode reward of ddpg : ')
+	# print(rddpg)
+
+
 	# SS-B
 	# rl_choose_by_uplink_b
-	rlb = rl_choose_by_uplink_b(env)
+	# rlb = rl_choose_by_uplink_b(env)
 	# print('episode reward of rlb : ')
 	# print(rlb)
 
+
 	# SS-W
 	# rl_choose_by_pending_queue
-	rlq = rl_choose_by_pending_queue(env)
+	# rlq = rl_choose_by_pending_queue(env)
 	# print('episode reward of rlq : ')
 	# print(rlq)
 	
+
 	# DS-BW
 	# rl_choose_by_uplinkb_and_pendingqueue
 	rlbq = rl_choose_by_uplinkb_and_pendingqueue(env)
@@ -436,15 +447,9 @@ if __name__ == '__main__':
 
 
 	# MS
-	rMS = MS(env, actionListForMS)
+	# rMS = MS(env, actionListForMS)
 	# print('episode reward of MS : ')
 	# print(rMS)
-
-
-	#ddpg算法
-	rddpg = rl_ddpg(env)
-	# print('episode reward of ddpg : ')
-	# print(rddpg)
 
 
 	# 查看 deadline 之前完成的任务数
@@ -474,11 +479,11 @@ if __name__ == '__main__':
 	plt.figure()
 	plt.plot(x, rac, color='blue', label='Reload')
 	# plt.plot(x, rac_bound_0, color='orange', label='Reload_nobound')
-	plt.plot(x, rlb, color='green', label='SS-B')
-	plt.plot(x, rlq, color='cyan', label='SS-W')
+	# plt.plot(x, rlb, color='green', label='SS-B')
+	# plt.plot(x, rlq, color='cyan', label='SS-W')
 	plt.plot(x, rlbq, color='grey', label='DS-BW')
-	plt.plot(x, rMS, color='yellow', label='MS')
-	plt.plot(x, rddpg, color='red', label='rddpg')
+	# plt.plot(x, rMS, color='yellow', label='MS')
+	# plt.plot(x, rddpg, color='red', label='rddpg')
 
 	plt.legend()
 
