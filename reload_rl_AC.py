@@ -45,8 +45,12 @@ class Actor_ac(object):
             self.acts = tf.nn.softmax(self.acts_prob)
 
         with tf.variable_scope('exp_v'):
-            log_prob = tf.log(self.acts_prob[0])
-            self.exp_v = tf.reduce_mean(log_prob * self.td_error)  # advantage (TD_error) guided loss
+            # self.log_prob = tf.log(tf.clip_by_value(self.acts_prob[0], 1e-8, 1))
+            # loss
+            # self.log_prob = tf.log(self.acts[0])
+            # reward
+            self.log_prob = tf.log(self.acts_prob[0])
+            self.exp_v = tf.reduce_mean(self.log_prob * self.td_error)  # advantage (TD_error) guided loss
 
         with tf.variable_scope('train'):
             self.train_op = tf.train.AdamOptimizer(lr).minimize(-self.exp_v)  # minimize(-exp_v) = maximize(exp_v)
@@ -54,7 +58,8 @@ class Actor_ac(object):
     def learn(self, s, a, td):
         s = s[np.newaxis, :]
         feed_dict = {self.s: s, self.a: a, self.td_error: td}
-        _, exp_v = self.sess.run([self.train_op, self.exp_v], feed_dict)
+        _, exp_v, log_prob = self.sess.run([self.train_op, self.exp_v, self.acts_prob], feed_dict)
+        # print('log_prob', log_prob)
         return exp_v
 
     def choose_action(self, s):

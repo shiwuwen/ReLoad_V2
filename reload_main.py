@@ -22,6 +22,7 @@ def rl_ac(env, bound=0):
 	'''
 	actionList = []
 	reward = []
+	Loss = []
 
 	sess = tf.Session()
 
@@ -40,6 +41,7 @@ def rl_ac(env, bound=0):
 	for episode in range(MAX_EPISODES):
 		s = env.reset()
 		ep_reward = 0
+		ep_loss = 0
 
 		for step in range(MAX_EP_STEPS):
 
@@ -80,21 +82,25 @@ def rl_ac(env, bound=0):
 
 			#训练
 			td_error = critic_ac.learn(s, r, s_)
-			actor_ac.learn(s, a, td_error)
+			loss = actor_ac.learn(s, a, td_error)
+
+			ep_loss += loss + 10.5
 
 			s = s_
 
 			if step%50==0:#if (i == 0 and step == 0) or step == MAX_EP_STEPS-1: # if step == MAX_EP_STEPS-1:
 				print('EPISODE: ', episode, ' action probability of rl_ac: ', a)
+				# print('ep_loss : ', ep_loss)
 				# print(actionList[step])
 				# print('服务器延迟： ', env.shortest_g[env.n])
-			# 	print('state : ', s)
+				# print('state : ', s)
 			# 	print('reward : ', r)
 			# 	print('Episode:', i, ' Reward: %i' % int(ep_reward))
 		reward.append(round(ep_reward/MAX_EP_STEPS,2))
+		Loss.append(round(ep_loss/MAX_EP_STEPS,2))
 
 	print('Running time of rl_ac: ', time.time()-t1)
-	return reward, actionList
+	return reward, actionList, Loss
 
 
 def rl_choose_by_uplink_b(env):
@@ -384,7 +390,7 @@ np.random.seed(5)
 #n=10,lamda=[40,70]:MAX_EPISODES=300
 #n=20,lamda=[20,50]:MAX_EPISODES=100
 #n=20,lamda=[40,70]:MAX_EPISODES=100
-MAX_EPISODES = 1000
+MAX_EPISODES = 260
 MAX_EP_STEPS = 100
 
 
@@ -407,7 +413,7 @@ if __name__ == '__main__':
 
 
 	# action-critic算法 Reload
-	rac, actionListForMS = rl_ac(env, clip_bound)
+	rac, actionListForMS, rac_loss = rl_ac(env, clip_bound)
 	# print(actionListForMS[0:5])
 
 
@@ -441,7 +447,7 @@ if __name__ == '__main__':
 
 	# DS-BW
 	# rl_choose_by_uplinkb_and_pendingqueue
-	rlbq = rl_choose_by_uplinkb_and_pendingqueue(env)
+	# rlbq = rl_choose_by_uplinkb_and_pendingqueue(env)
 	# print('episode reward of rlbq : ')
 	# print(rlbq)
 
@@ -477,20 +483,23 @@ if __name__ == '__main__':
 	#绘制reward图表
 	x = [i for i in range(MAX_EPISODES)]
 	plt.figure()
-	plt.plot(x, rac, color='blue', label='Reload')
+	# plt.plot(x, rac, color='blue', label='Reload')
+	plt.plot(x, rac_loss, color='red', label='LOSS')
 	# plt.plot(x, rac_bound_0, color='orange', label='Reload_nobound')
 	# plt.plot(x, rlb, color='green', label='SS-B')
 	# plt.plot(x, rlq, color='cyan', label='SS-W')
-	plt.plot(x, rlbq, color='grey', label='DS-BW')
+	# plt.plot(x, rlbq, color='grey', label='DS-BW')
 	# plt.plot(x, rMS, color='yellow', label='MS')
 	# plt.plot(x, rddpg, color='red', label='rddpg')
 
 	plt.legend()
 
 	plt.xlabel('Episode')
+	# plt.ylabel('Loss')
 	plt.ylabel('Reward')
 
 	plt.show()
+	plt.close()
 
 	print('ok')
 
