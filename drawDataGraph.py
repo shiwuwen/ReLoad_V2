@@ -47,37 +47,41 @@ def rewardAndEpisode(filename, MAX_EPISODES, inXlabel, inYlabel):
 	originList = toolbar.txt2list(filename)
 	originListLen = len(originList)
 	modifiedList = []
-	moveStep = 10
-	#n20lamda25: 20
+	moveStep = 5
+	#n20lamda25: 20		10
 	#n20lamda47: 10
 	#n10lamda47: 100
-	#n10lamda25: 120
-	startStep = 120
-	#n20lamda25: MAX_EPISODES
+	#n10lamda25: 120	0
+	startStep = 10
+	#n20lamda25: MAX_EPISODES	100
 	#n20lamda47: MAX_EPISODES
 	#n10lamda47: 210
-	#n10lamda25: 260
-	endStep = 260
+	#n10lamda25: 260	260
+	endStep = MAX_EPISODES
 
 	for i in range(originListLen):
 		modifiedList.append(toolbar.sumListValue(originList[i][startStep:endStep], moveStep))
 	
 
 	#绘制折线图
-	x = [i for i in range(startStep, endStep, moveStep)]
+	# x = [i for i in range(startStep, endStep, moveStep)]
+	x = [i*10 for i in range(len(modifiedList[0]))]
 	plt.figure()
 	plt.plot(x, modifiedList[0], color='blue', label='Reload', marker='o', zorder=1)
 	# plt.plot(x, rac_bound_0, color='orange', label='reload_nobound')
-	plt.plot(x, modifiedList[1], color='green', label='SS-B', marker='v', zorder=1)
-	plt.plot(x, modifiedList[2], color='cyan', label='SS-W', marker='D', zorder=1)
-	plt.plot(x, modifiedList[3], color='grey', label='DS-BW', marker='^', zorder=1)
-	plt.plot(x, modifiedList[4], color='magenta', label='MS', marker='x', zorder=1)
+	# plt.plot(x, modifiedList[1], color='green', label='SS-B', marker='v', zorder=1)
+	# plt.plot(x, modifiedList[2], color='cyan', label='SS-W', marker='D', zorder=1)
+	# plt.plot(x, modifiedList[3], color='grey', label='DS-BW', marker='^', zorder=1)
+	# plt.plot(x, modifiedList[4], color='magenta', label='MS', marker='x', zorder=1)
+
+	# for rddpg
+	plt.plot(x, modifiedList[1], color='red', label='rddpg', marker='v', zorder=1)
 
 	#n20lamda25: plt.legend(loc='best', bbox_to_anchor=(0.96, 0.55))
 	#n20lamda47: plt.legend(loc='lower right')
 	#n10lamda47: plt.legend(loc='lower right', bbox_to_anchor=(1, 0.2))
 	#n10lamda25: plt.legend(loc='lower right', bbox_to_anchor=(1, 0.2))
-	plt.legend(loc='lower right', bbox_to_anchor=(1, 0.2))
+	plt.legend(loc='lower right')
 
 	plt.xlabel('Episode')
 	plt.ylabel('Reward')
@@ -93,19 +97,22 @@ def reloadCompare(filename, MAX_EPISODES, inXlabel, inYlabel):
 	originListLen = len(originList)
 	modifiedList = []
 
-	moveStep = 20
+	# n10lamda25: [10, 40, MAX_EPISODES]
+	# n20lamda25: [5, 40, 80]
+	moveStep = 5
 	startStep = 40
-	endStep = 200
+	endStep = 80
 
 	for i in range(originListLen):
 		modifiedList.append(toolbar.sumListValue(originList[i][startStep:endStep], moveStep))
 	
 
 	#绘制折线图
-	x = [i for i in range(startStep, endStep, moveStep)]
+	# x = [i for i in range(startStep, endStep, moveStep)]
+	x = [i*10 for i in range(len(modifiedList[0]))]
 	plt.figure()
 	plt.plot(x, modifiedList[0], color='blue', label='Reload', marker='o', zorder=1)
-	plt.plot(x, modifiedList[1], color='orange', label='Reload_nobound', marker='v', zorder=1)
+	plt.plot(x, modifiedList[1], color='orange', label='Reload_without_clip', marker='v', zorder=1)
 	 
 	plt.legend(loc='lower right')
 
@@ -127,11 +134,11 @@ if __name__ == '__main__':
 	#n=20,lamda=[40,70]:MAX_EPISODES=100
 
 	# 绘制 clip_bound 消融实验图
-	inLineCortXLabel = 'Reward'
-	inLineCortYLabel = 'Episode'
-	inLineCortFilename = 'n10lamda25_compare.txt'
-	inLineCortEpisode = 200
-	reloadCompare(inLineCortFilename, inLineCortEpisode, inLineCortXLabel, inLineCortYLabel)
+	# inLineCortXLabel = 'Reward'
+	# inLineCortYLabel = 'Episode'
+	# inLineCortFilename = 'n20lamda25_compare.txt'
+	# inLineCortEpisode = 100
+	# reloadCompare(inLineCortFilename, inLineCortEpisode, inLineCortXLabel, inLineCortYLabel)
 
 	# 绘制直方图
 	# inHisXLabel = 'Name of different algorithms'
@@ -141,10 +148,10 @@ if __name__ == '__main__':
 	# countNumberOfTasksFinishedBeforeDeadLines(inHisFilename, inHisEpisode, inHisXLabel, inHisYLabel)
 
 	# 绘制折线图
-	# inLineCortXLabel = 'Reward'
-	# inLineCortYLabel = 'Episode'
-	# inLineCortFilename = 'n10lamda25.txt'
-	# inLineCortEpisode = 260
-	# rewardAndEpisode(inLineCortFilename, inLineCortEpisode, inLineCortXLabel, inLineCortYLabel)
+	inLineCortXLabel = 'Reward'
+	inLineCortYLabel = 'Episode'
+	inLineCortFilename = 'n20lamda25_rddpg.txt'
+	inLineCortEpisode = 100
+	rewardAndEpisode(inLineCortFilename, inLineCortEpisode, inLineCortXLabel, inLineCortYLabel)
 
 
