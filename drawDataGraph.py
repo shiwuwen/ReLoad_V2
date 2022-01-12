@@ -52,7 +52,7 @@ def rewardAndEpisode(filename, MAX_EPISODES, inXlabel, inYlabel):
 	#n20lamda47: 10
 	#n10lamda47: 100
 	#n10lamda25: 120	0
-	startStep = 10
+	startStep = 0
 	#n20lamda25: MAX_EPISODES	100
 	#n20lamda47: MAX_EPISODES
 	#n10lamda47: 210
@@ -150,7 +150,7 @@ if __name__ == '__main__':
 	# 绘制折线图
 	inLineCortXLabel = 'Reward'
 	inLineCortYLabel = 'Episode'
-	inLineCortFilename = 'n20lamda25_rddpg.txt'
+	inLineCortFilename = 'n10lamda25_rddpg.txt'
 	inLineCortEpisode = 100
 	rewardAndEpisode(inLineCortFilename, inLineCortEpisode, inLineCortXLabel, inLineCortYLabel)
 

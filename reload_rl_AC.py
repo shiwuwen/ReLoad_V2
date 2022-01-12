@@ -47,9 +47,9 @@ class Actor_ac(object):
         with tf.variable_scope('exp_v'):
             # self.log_prob = tf.log(tf.clip_by_value(self.acts_prob[0], 1e-8, 1))
             # loss
-            # self.log_prob = tf.log(self.acts[0])
+            self.log_prob = tf.log(self.acts[0])
             # reward
-            self.log_prob = tf.log(self.acts_prob[0])
+            # self.log_prob = tf.log(self.acts_prob[0])
             self.exp_v = tf.reduce_mean(self.log_prob * self.td_error)  # advantage (TD_error) guided loss
 
         with tf.variable_scope('train'):

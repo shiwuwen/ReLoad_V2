@@ -84,7 +84,7 @@ def rl_ac(env, bound=0):
 			td_error = critic_ac.learn(s, r, s_)
 			loss = actor_ac.learn(s, a, td_error)
 
-			ep_loss += loss + 10.5
+			ep_loss += loss + 18.5
 
 			s = s_
 
@@ -387,15 +387,14 @@ clip_bound = 0.09
 #n=10,lamda=[40,70]: 1-0, 2-1, 3-0, 4-0, 5-0, 6-1, 7-1*
 #n=20,lamda=[20,50]: 1-0, 2-0, 3-0, 4-0, 5-1, 6-0, 7-1*(epi100), 8-0, 9-0, 10-0, 11-0, 12-0, 13-0
 #n=20,lamda=[40,70]: 1-0, 2-0, 3-0, 4-0, 5-0, 6-0, 7-0, 8-1(epi90), 9-0, 10-0, 11-0, 12-0, 13-1*(100)
-np.random.seed(7)
-
+np.random.seed(5)
 
 #当EPISODES较大，STEPS较小时能获得较好效果
 #n=10,lamda=[20,50]:MAX_EPISODES=260
 #n=10,lamda=[40,70]:MAX_EPISODES=300
 #n=20,lamda=[20,50]:MAX_EPISODES=100
 #n=20,lamda=[40,70]:MAX_EPISODES=100
-MAX_EPISODES = 100
+MAX_EPISODES = 260
 MAX_EP_STEPS = 100
 
 
@@ -424,8 +423,8 @@ if __name__ == '__main__':
 
 	# Reload with no clip bound
 	#重置计算图
-	tf.reset_default_graph()
-	rac_bound_0, _, _ = rl_ac(env)
+	# tf.reset_default_graph()
+	# rac_bound_0, _, _ = rl_ac(env)
 	# print('episode reward of ac : ')
 	# print(rac)
 
@@ -474,35 +473,37 @@ if __name__ == '__main__':
 
 
 	# 将算法运算结果写入文本中
-	list2txtList = []
-	list2txtList.append(rac)
-	list2txtList.append(rac_bound_0)
+	# list2txtList = []
+	# list2txtList.append(rac)
+	# list2txtList.append(rac_bound_0)
 	# list2txtList.append(rlb)
 	# list2txtList.append(rlq)
 	# list2txtList.append(rlbq)
 	# list2txtList.append(rMS)
 	# list2txtList.append(rddpg)
-	filename = 'n20lamda25_compare.txt'
-	toolbar.list2txt(list2txtList, filename)
+	# filename = 'n20lamda25_compare.txt'
+	# toolbar.list2txt(list2txtList, filename)
 	
 
 	#绘制reward图表
 	x = [i for i in range(MAX_EPISODES)]
 	plt.figure()
 	plt.plot(x, rac, color='blue', label='Reload')
-	# plt.plot(x, rac_loss, color='red', label='LOSS')
-	plt.plot(x, rac_bound_0, color='orange', label='Reload_without_clip')
+	# plt.plot(x, rac_loss, color='red', label='N20lamda25')
+	# plt.plot(x, rac_bound_0, color='orange', label='Reload_without_clip')
 	# plt.plot(x, rlb, color='green', label='SS-B')
 	# plt.plot(x, rlq, color='cyan', label='SS-W')
 	# plt.plot(x, rlbq, color='grey', label='DS-BW')
 	# plt.plot(x, rMS, color='yellow', label='MS')
 	# plt.plot(x, rddpg, color='red', label='rddpg')
 
-	plt.legend()
+	plt.legend(loc='best')
 
-	plt.xlabel('Episode')
-	# plt.ylabel('Loss')
+	# plt.xlabel('Episode')
+	plt.ylabel('Loss')
 	plt.ylabel('Reward')
+
+	plt.grid(True, linestyle='--', axis='both', zorder=0)
 
 	plt.show()
 	plt.close()

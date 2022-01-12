@@ -18,7 +18,7 @@ class Environment:
 		#用户设备的计算能力 GHz
 		self.a = np.random.uniform(0.010,0.040)
 		#边缘服务器的数量 10、20 [5,10), [10,20)
-		self.N = 20 #np.random.randint(5,10)
+		self.N = 10 #np.random.randint(5,10)
 		#N个边缘服务器的计算能力 GHz
 		self.c = np.random.uniform(0.100,0.200, size=self.N)
 		#任意两个边缘服务器之间的传播延迟，这里通过随机数生成 s
