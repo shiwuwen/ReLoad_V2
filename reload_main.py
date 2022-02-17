@@ -394,7 +394,7 @@ np.random.seed(5)
 #n=10,lamda=[40,70]:MAX_EPISODES=300
 #n=20,lamda=[20,50]:MAX_EPISODES=100
 #n=20,lamda=[40,70]:MAX_EPISODES=100
-MAX_EPISODES = 260
+MAX_EPISODES = 200
 MAX_EP_STEPS = 100
 
 
@@ -488,8 +488,8 @@ if __name__ == '__main__':
 	#绘制reward图表
 	x = [i for i in range(MAX_EPISODES)]
 	plt.figure()
-	plt.plot(x, rac, color='blue', label='Reload')
-	# plt.plot(x, rac_loss, color='red', label='N20lamda25')
+	# plt.plot(x, rac, color='blue', label='Reload')
+	plt.plot(x, rac_loss, color='red', label='N10lamda25')
 	# plt.plot(x, rac_bound_0, color='orange', label='Reload_without_clip')
 	# plt.plot(x, rlb, color='green', label='SS-B')
 	# plt.plot(x, rlq, color='cyan', label='SS-W')
@@ -499,9 +499,9 @@ if __name__ == '__main__':
 
 	plt.legend(loc='best')
 
-	# plt.xlabel('Episode')
+	plt.xlabel('Episode')
 	plt.ylabel('Loss')
-	plt.ylabel('Reward')
+	# plt.ylabel('Reward')
 
 	plt.grid(True, linestyle='--', axis='both', zorder=0)
 
